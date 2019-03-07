@@ -236,20 +236,20 @@ void display_func() {
     
     // TODO: Apply rotation(s) to the set of points
      vector<GLfloat> homogenous_coord = to_homogenous_coord(points);
-     vector<GLfloat> multipledPoints;
+     vector<GLfloat> multiplied;
      vector<GLfloat> newPoints;
      vector<GLfloat> row;
     
      for(int i = 0; i < homogenous_coord.size(); i+=4 ) {
          row = { homogenous_coord[i], homogenous_coord[i+1], homogenous_coord[i+2], homogenous_coord[i+3]};
-         multipledPoints = (mat_mult(rotation_matrix_x(deg2rad(theta)), row));
-         multipledPoints = (mat_mult(rotation_matrix_y(deg2rad(theta)), multipledPoints));
-         multipledPoints = (mat_mult(rotation_matrix_z(deg2rad(theta)), multipledPoints));
-         newPoints.insert(newPoints.end(), multipledPoints.begin(), multipledPoints.end());
+         multiplied = (mat_mult(rotation_matrix_x(deg2rad(theta)), row));
+         multiplied = (mat_mult(rotation_matrix_y(deg2rad(theta)), multiplied));
+         multiplied = (mat_mult(rotation_matrix_z(deg2rad(theta)), multiplied));
+         newPoints.insert(newPoints.end(), multiplied.begin(),multiplied.end());
      };
     
      newPoints = to_cartesian_coord(newPoints);
-     
+    
      GLfloat* vertices = vector2array(newPoints);
      
      

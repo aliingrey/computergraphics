@@ -5,8 +5,8 @@
  
  Collaborators: Filler, Alexia
  
- Project Summary: A short paragraph (3-4 sentences) describing the work you
- did for the project.
+ Project Summary: My program takes in points, and row by row, and adds a homogenous coordinate. 
+ Then it takes in those points and multiplies them by the x, y, and z rotation matrices.
  ***/
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"

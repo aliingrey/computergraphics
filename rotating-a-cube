@@ -5,11 +5,12 @@
  
  Collaborators: Filler, Alexia
  
- Project Summary: My program takes in points, and row by row, and adds a homogenous coordinate. 
+ Project Summary: My program takes in cartesian coordinates, and adds a homogenous coordinate.
  Then it takes in those points and multiplies them by the x, y, and z rotation matrices.
+ This rotates the cube about all three axes.
+ 
  ***/
 
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
@@ -71,7 +72,7 @@ vector<GLfloat> to_cartesian_coord(vector<GLfloat> homogenous_coords) {
 // Definition of a rotation matrix about the x-axis theta degrees
 vector<GLfloat> rotation_matrix_x (float theta) {
     vector<GLfloat> rotate_mat_x =
-        { 1, 0, 0, 0,
+    { 1, 0, 0, 0,
         0, cos(theta), -sin(theta), 0,
         0, sin(theta), cos(theta),  0,
         0, 0, 0, 1  } ;
@@ -84,7 +85,7 @@ vector<GLfloat> rotation_matrix_x (float theta) {
 // Definition of a rotation matrix along the y-axis by theta degrees
 vector<GLfloat> rotation_matrix_y (float theta) {
     vector<GLfloat> rotate_mat_y =
-        {cos(theta), 0, -sin(theta), 0,
+    {cos(theta), 0, -sin(theta), 0,
         0, 1, 0, 0,
         sin(theta),  0, cos(theta), 0,
         0, 0, 0, 1};
@@ -108,24 +109,7 @@ vector<GLfloat> rotation_matrix_z (float theta) {
 
 // Perform matrix multiplication for A B
 vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
-    /*
-    vector<GLfloat> result;
-    GLfloat* Aarr = vector2array(A);
-    GLfloat* Barr = vector2array(B);
-    for(int i = 0; i < 16; i+=4) {
-        
-        result.push_back( (Aarr[i] * Barr[0]) + (Aarr[i + 1] * Barr[1]) + (Aarr[i + 2] * Barr[2]) + (Aarr[i + 3] * Barr[3]) );
-    };
-    return result;
-    */
-    
-    
-    vector<GLfloat> result;
-/*
-    GLfloat* arrayA = vector2array(A);
-    GLfloat* arrayB = vector2array(B);
-*/
-
+    vector<GLfloat> result;    
     // TODO: Compute matrix multiplication of A B
     for (int i = 0; i < B.size(); i+=4) {
         result.push_back((A[0] * B[i]) + (A[1] * B[i+1]) + (A[2] * B[i+2]) + (A[3] * B[i+3]));
@@ -235,24 +219,15 @@ void display_func() {
     };
     
     // TODO: Apply rotation(s) to the set of points
-     vector<GLfloat> homogenous_coord = to_homogenous_coord(points);
-     vector<GLfloat> multiplied;
-     vector<GLfloat> newPoints;
-     vector<GLfloat> row;
+    vector<GLfloat> homogeneous_points = to_homogenous_coord(points);
+
+    vector<GLfloat> x_rotated_points = mat_mult(rotation_matrix_x(deg2rad(theta)), homogeneous_points);
+    vector<GLfloat> y_rotated_points = mat_mult(rotation_matrix_y(deg2rad(theta)), x_rotated_points);
+    vector<GLfloat> z_rotated_points = mat_mult(rotation_matrix_z(deg2rad(theta)), y_rotated_points);
+    points = to_cartesian_coord(z_rotated_points);
     
-     for(int i = 0; i < homogenous_coord.size(); i+=4 ) {
-         row = { homogenous_coord[i], homogenous_coord[i+1], homogenous_coord[i+2], homogenous_coord[i+3]};
-         multiplied = (mat_mult(rotation_matrix_x(deg2rad(theta)), row));
-         multiplied = (mat_mult(rotation_matrix_y(deg2rad(theta)), multiplied));
-         multiplied = (mat_mult(rotation_matrix_z(deg2rad(theta)), multiplied));
-         newPoints.insert(newPoints.end(), multiplied.begin(),multiplied.end());
-     };
+    GLfloat* vertices = vector2array(points);
     
-     newPoints = to_cartesian_coord(newPoints);
-    
-     GLfloat* vertices = vector2array(newPoints);
-     
-     
     glVertexPointer(3,          // 3 components (x, y, z)
                     GL_FLOAT,   // Vertex type is GL_FLOAT
                     0,          // Start position in referenced memory
@@ -294,4 +269,3 @@ int main (int argc, char **argv) {
     glutMainLoop();
     return 0;
 }
-

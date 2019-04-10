@@ -1,7 +1,7 @@
 /***
  Assignment-3: Geometric Modeling of a Scene
  
- Name: Wong, Alex (Please write your name in Last Name, First Name format)
+ Name: Ingrey, Alison (Please write your name in Last Name, First Name format)
  
  Collaborators: Doe, John; Doe, Jane
  ** Note: although the assignment should be completed individually
@@ -268,14 +268,32 @@ void init_camera() {
 // Construct the scene using objects built from cubes/prisms
 vector<GLfloat> init_scene() {
     vector<GLfloat> scene;
-    vector<GLfloat> rectangle;
-    vector<GLfloat> rectangle_01;
-    rectangle = mat_mult(scaling_matrix(1.5, 1, 1), build_cube());
-    rectangle_01 = mat_mult(scaling_matrix(1, 2, 1), build_cube());
+    vector<GLfloat> main_section_top;
+    vector<GLfloat> main_section_bottom;
+    vector<GLfloat> pillow_01;
+    vector<GLfloat> pillow_02;
     
-    scene.insert(scene.end(), rectangle.begin(), rectangle.end());
-    scene.insert(scene.end(), rectangle_01.begin(), rectangle_01.end());
-    cout << scene.size();
+    main_section_top = mat_mult(scaling_matrix(2, 0.5, 4), build_cube());
+    main_section_top = mat_mult(rotation_matrix_y(70), main_section_top);
+    main_section_top = mat_mult(translation_matrix(0, 0.5, -0.3), main_section_top);
+    
+    main_section_bottom = mat_mult(scaling_matrix(1.5, 0.5, 4), build_cube());
+    main_section_bottom = mat_mult(rotation_matrix_y(70), main_section_bottom);
+    //main_section_bottom = mat_mult(rotation_matrix_x(-15), main_section_bottom);
+    
+    pillow_01 = mat_mult(rotation_matrix_x(-10), build_cube());
+    pillow_01 = mat_mult(scaling_matrix(.5, .5, .2), pillow_01);
+    pillow_01 = mat_mult(translation_matrix(1.5, 3, 1), pillow_01);
+    
+    pillow_02 = mat_mult(scaling_matrix(.8, .5, .2), build_cube());
+    pillow_02 = mat_mult(translation_matrix(0, 3, 1), pillow_02);
+    
+    scene.insert(scene.end(), main_section_top.begin(), main_section_top.end());
+    //scene.insert(scene.end(), main_section_bottom.begin(), main_section_bottom.end());
+    scene.insert(scene.end(), pillow_01.begin(), pillow_01.end());
+    scene.insert(scene.end(), pillow_02.begin(), pillow_02.end());
+    
+    //cout << scene.size();
     
     // TODO: Build your scene here
     

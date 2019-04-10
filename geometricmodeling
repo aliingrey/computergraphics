@@ -268,30 +268,78 @@ void init_camera() {
 // Construct the scene using objects built from cubes/prisms
 vector<GLfloat> init_scene() {
     vector<GLfloat> scene;
-    vector<GLfloat> main_section_top;
-    vector<GLfloat> main_section_bottom;
+    vector<GLfloat> couch_bottom_right;
+    vector<GLfloat> couch_bottom_middle;
+    vector<GLfloat> couch_bottom_long;
+    vector<GLfloat> couch_back_right;
+    vector<GLfloat> couch_back_left;
+    vector<GLfloat> couch_arm_right;
+    vector<GLfloat> couch_arm_left;
     vector<GLfloat> pillow_01;
     vector<GLfloat> pillow_02;
+    vector<GLfloat> pillow_03;
+    vector<GLfloat> pillow_04;
     
-    main_section_top = mat_mult(scaling_matrix(2, 0.5, 4), build_cube());
-    main_section_top = mat_mult(rotation_matrix_y(70), main_section_top);
-    main_section_top = mat_mult(translation_matrix(0, 0.5, -0.3), main_section_top);
+    couch_bottom_right = mat_mult(scaling_matrix(2, 0.5, 2), build_cube());
+    couch_bottom_right = mat_mult(rotation_matrix_y(70), couch_bottom_right);
+    couch_bottom_right = mat_mult(translation_matrix(2, -1.5, -2), couch_bottom_right);
     
-    main_section_bottom = mat_mult(scaling_matrix(1.5, 0.5, 4), build_cube());
-    main_section_bottom = mat_mult(rotation_matrix_y(70), main_section_bottom);
-    //main_section_bottom = mat_mult(rotation_matrix_x(-15), main_section_bottom);
+    couch_bottom_middle = mat_mult(scaling_matrix(3.5, 0.5, 2), build_cube());
+    couch_bottom_middle = mat_mult(rotation_matrix_y(70), couch_bottom_middle);
+    couch_bottom_middle = mat_mult(translation_matrix(-0.1, -1.5, -2), couch_bottom_middle);
+    
+    couch_bottom_long = mat_mult(scaling_matrix(2.5, 0.5, 2), build_cube());
+    couch_bottom_long = mat_mult(rotation_matrix_y(70), couch_bottom_long);
+    couch_bottom_long = mat_mult(translation_matrix(-0.7, 0, 1.5), couch_bottom_long);
+    
+    couch_back_right = mat_mult(scaling_matrix(3.5, 0.3, 1.5), build_cube());
+    couch_back_right = mat_mult(rotation_matrix_x(90), couch_back_right);
+    couch_back_right = mat_mult(rotation_matrix_y(-20), couch_back_right);
+    couch_back_right = mat_mult(translation_matrix(1, 0, -1.5), couch_back_right);
+    
+    couch_back_left = mat_mult(scaling_matrix(2, 0.3, 1.5), build_cube());
+    couch_back_left = mat_mult(rotation_matrix_x(90), couch_back_left);
+    couch_back_left = mat_mult(rotation_matrix_y(-20), couch_back_left);
+    couch_back_left = mat_mult(translation_matrix(-1.3, 0.5, 0), couch_back_left);
+    
+    
+    couch_arm_left = mat_mult(scaling_matrix(0.4, 1, 1.8), build_cube());
+    couch_arm_left = mat_mult(rotation_matrix_y(-20), couch_arm_left);
+    couch_arm_left = mat_mult(translation_matrix(-2.5, -0.3, .7), couch_arm_left);
+    
+    couch_arm_right = mat_mult(scaling_matrix(0.4, 1, 1.8), build_cube());
+    couch_arm_right = mat_mult(rotation_matrix_y(-20), couch_arm_right);
+    couch_arm_right = mat_mult(translation_matrix(2.7, 1.5, 0.7), couch_arm_right);
+    //
+    //main_section_bottom = mat_mult(rotation_matrix_x(70), main_section_bottom);
     
     pillow_01 = mat_mult(rotation_matrix_x(-10), build_cube());
     pillow_01 = mat_mult(scaling_matrix(.5, .5, .2), pillow_01);
-    pillow_01 = mat_mult(translation_matrix(1.5, 3, 1), pillow_01);
+    pillow_01 = mat_mult(translation_matrix(2, 2.3, 1.3), pillow_01);
+
+    pillow_02 = mat_mult(scaling_matrix(.55, .65, .2), build_cube());
+    pillow_02 = mat_mult(rotation_matrix_x(-10), pillow_02);
+    pillow_02 = mat_mult(translation_matrix(2.3, 2.2, 1), pillow_02);
     
-    pillow_02 = mat_mult(scaling_matrix(.8, .5, .2), build_cube());
-    pillow_02 = mat_mult(translation_matrix(0, 3, 1), pillow_02);
+    pillow_03 = mat_mult(scaling_matrix(.65, .65, .2), build_cube());
+    pillow_03 = mat_mult(rotation_matrix_y(-40), pillow_03);
+    pillow_03 = mat_mult(translation_matrix(-1.2, 1, 1), pillow_03);
     
-    scene.insert(scene.end(), main_section_top.begin(), main_section_top.end());
-    //scene.insert(scene.end(), main_section_bottom.begin(), main_section_bottom.end());
+    pillow_04 = mat_mult(scaling_matrix(.75, .85, .2), build_cube());
+    pillow_04 = mat_mult(rotation_matrix_y(-40), pillow_04);
+    pillow_04 = mat_mult(translation_matrix(-0.5, 1, 1), pillow_04);
+    
+    scene.insert(scene.end(), couch_bottom_right.begin(), couch_bottom_right.end());
+    scene.insert(scene.end(), couch_bottom_middle.begin(), couch_bottom_middle.end());
+    scene.insert(scene.end(), couch_bottom_long.begin(), couch_bottom_long.end());
+    scene.insert(scene.end(), couch_back_right.begin(), couch_back_right.end());
+    scene.insert(scene.end(), couch_back_left.begin(), couch_back_left.end());
     scene.insert(scene.end(), pillow_01.begin(), pillow_01.end());
     scene.insert(scene.end(), pillow_02.begin(), pillow_02.end());
+    scene.insert(scene.end(), pillow_03.begin(), pillow_03.end());
+    scene.insert(scene.end(), pillow_04.begin(), pillow_04.end());
+    scene.insert(scene.end(), couch_arm_right.begin(), couch_arm_right.end());
+    scene.insert(scene.end(), couch_arm_left.begin(), couch_arm_left.end());
     
     //cout << scene.size();
     

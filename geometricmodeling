@@ -39,6 +39,7 @@ float EPSILON = 0.000001;
 float THETA = 0.0;
 // Vector placeholders for the scene and color array
 vector<GLfloat> SCENE;
+
 vector<GLfloat> COLOR;
 
 /**************************************************
@@ -104,9 +105,9 @@ vector<GLfloat> to_cartesian_coord(vector<GLfloat> homogeneous_coords) {
 vector<GLfloat> translation_matrix (float dx, float dy, float dz) {
     // TODO: Define translation matrix
     vector<GLfloat> translate_mat {
-        0, 0, 0, dx,
-        0, 0, 0, dy,
-        0, 0, 0, dz,
+        1, 0, 0, dx,
+        0, 1, 0, dy,
+        0, 0, 1, dz,
         0, 0, 0, 1  };
         return translate_mat;
 }
@@ -124,6 +125,7 @@ vector<GLfloat> scaling_matrix (float sx, float sy, float sz) {
 
 // Definition of a rotation matrix about the x-axis theta degrees
 vector<GLfloat> rotation_matrix_x (float theta) {
+    theta = deg2rad(theta);
     vector<GLfloat> rotate_mat_x {
         // TODO: Define rotation matrix about the x-axis matrix
         1, 0, 0, 0,
@@ -136,6 +138,7 @@ vector<GLfloat> rotation_matrix_x (float theta) {
 
 // Definition of a rotation matrix about the y-axis by theta degrees
 vector<GLfloat> rotation_matrix_y (float theta) {
+    theta = deg2rad(theta);
     vector<GLfloat> rotate_mat_y{
         // TODO: Define rotation matrix about the y-axis matrix
         cos(theta), 0, -sin(theta), 0,
@@ -148,6 +151,7 @@ vector<GLfloat> rotation_matrix_y (float theta) {
 
 // Definition of a rotation matrix about the z-axis by theta degrees
 vector<GLfloat> rotation_matrix_z (float theta) {
+    theta = deg2rad(theta);
     vector<GLfloat> rotate_mat_z{
         // TODO: Define rotation matrix about the z-axis matrix
         cos(theta), -sin(theta), 0, 0,
@@ -162,6 +166,8 @@ vector<GLfloat> rotation_matrix_z (float theta) {
 vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
     vector<GLfloat> result;
     // TODO: Compute matrix multiplication of A B
+    B = to_homogeneous_coord(B);
+    
     for (int b = 0; b < B.size()/4; b++) {
         for (int a = 0; a < 4; a++) {
             float element_wise_sum = 0.0;
@@ -175,53 +181,44 @@ vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
             result.push_back(element_wise_sum);
         }
     }
-    return result;
+    
+    return to_cartesian_coord(result);
 }
 
 // Builds a unit cube centered at the origin
 vector<GLfloat> build_cube() {
-    // TODO: Creates a unit cube by transforming a set of planes
     vector<GLfloat> result;
     vector<GLfloat> plane = init_plane();
+
+    vector<GLfloat> front_plane;
+    vector<GLfloat> back_plane;
+    vector<GLfloat> left_plane;
+    vector<GLfloat> right_plane;
+    vector<GLfloat> top_plane;
+    vector<GLfloat> bottom_plane;
     
-    vector<GLfloat> homog_plane = to_homogeneous_coord(plane);
+    front_plane = mat_mult(translation_matrix(0, 0, 0.5), plane);
+
+    back_plane = mat_mult(translation_matrix(0, 0, -0.5), plane);
+
+    left_plane  = mat_mult(rotation_matrix_y(-90.0), plane);
+    left_plane  = mat_mult(translation_matrix(-0.5, 0, 0), left_plane);
+
+    right_plane = mat_mult(rotation_matrix_y(90), plane);
+    right_plane = mat_mult(translation_matrix(0.5, 0, 0), right_plane);
+
+    top_plane = mat_mult(rotation_matrix_x(90), plane);
+    top_plane = mat_mult(translation_matrix(0, 0.5, 0), top_plane);
+
+    bottom_plane = mat_mult(rotation_matrix_x(-90), plane);
+    bottom_plane = mat_mult(translation_matrix(0, -0.5, 0), bottom_plane);
     
-    vector<GLfloat> front_plane = mat_mult(homog_plane, translation_matrix(0, 0, 0.5));
-    vector<GLfloat> back_plane = mat_mult(homog_plane, translation_matrix(0, 0, -0.5));
-    
-    vector<GLfloat> left_plane  = mat_mult(homog_plane, rotation_matrix_y(deg2rad(-90)));
-    left_plane  = mat_mult(homog_plane, translation_matrix(-0.5, 0, 0));
-    
-    vector<GLfloat> right_plane = mat_mult(homog_plane, rotation_matrix_y(deg2rad(90)));
-    right_plane = mat_mult(homog_plane, translation_matrix(0.5, 0, 0));
-    
-    vector<GLfloat> top_plane = mat_mult(homog_plane, rotation_matrix_x(deg2rad(90)));
-    top_plane = mat_mult(homog_plane, translation_matrix(0, 0, 0.5));
-    
-    vector<GLfloat> bottom_plane = mat_mult(homog_plane, rotation_matrix_y(deg2rad(-90)));
-    bottom_plane = mat_mult(homog_plane, translation_matrix(0, -1, 0));
-    
-    /*
     result.insert(result.end(), front_plane.begin(), front_plane.end());
-    result.insert(result.end(), back_plane.begin(), back_plane.end());
     result.insert(result.end(), left_plane.begin(), left_plane.end());
     result.insert(result.end(), right_plane.begin(), right_plane.end());
+    result.insert(result.end(), back_plane.begin(), back_plane.end());
     result.insert(result.end(), top_plane.begin(), top_plane.end());
     result.insert(result.end(), bottom_plane.begin(), bottom_plane.end());
-    */
-    vector<GLfloat> front_cartesian_plane = to_cartesian_coord(front_plane);
-    vector<GLfloat> back_cartesian_plane = to_cartesian_coord(back_plane);
-    vector<GLfloat> top_cartesian_plane = to_cartesian_coord(top_plane);
-    vector<GLfloat> bottom_cartesian_plane = to_cartesian_coord(bottom_plane);
-    vector<GLfloat> left_cartesian_plane = to_cartesian_coord(left_plane);
-    vector<GLfloat> right_cartesian_plane = to_cartesian_coord(right_plane);
-    
-    result.insert(result.end(), front_cartesian_plane.begin(), front_cartesian_plane.end());
-    result.insert(result.end(), back_cartesian_plane.begin(), back_cartesian_plane.end());
-    result.insert(result.end(), top_cartesian_plane.begin(), top_cartesian_plane.end());
-    result.insert(result.end(), bottom_cartesian_plane.begin(), bottom_cartesian_plane.end());
-    result.insert(result.end(), left_cartesian_plane.begin(), left_cartesian_plane.end());
-    result.insert(result.end(), right_cartesian_plane.begin(), right_cartesian_plane.end());
     
     return result;
 }
@@ -315,6 +312,9 @@ void display_func() {
     
     glFlush();            //Finish rendering
     glutSwapBuffers();
+    
+    //SCENE = init_scene();
+
 }
 
 void idle_func() {

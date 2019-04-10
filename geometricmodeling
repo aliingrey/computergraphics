@@ -102,48 +102,58 @@ vector<GLfloat> to_cartesian_coord(vector<GLfloat> homogeneous_coords) {
 
 // Definition of a translation matrix
 vector<GLfloat> translation_matrix (float dx, float dy, float dz) {
-    vector<GLfloat> translate_mat;
-    
     // TODO: Define translation matrix
-    
-    return translate_mat;
+    vector<GLfloat> translate_mat {
+        0, 0, 0, dx,
+        0, 0, 0, dy,
+        0, 0, 0, dz,
+        0, 0, 0, 1  };
+        return translate_mat;
 }
 
 // Definition of a scaling matrix
 vector<GLfloat> scaling_matrix (float sx, float sy, float sz) {
-    vector<GLfloat> scale_mat;
-    
+    vector<GLfloat> scale_mat {
     // TODO: Define scaling matrix
-    
+        sx, 0, 0, 0,
+        0, sy, 0, 0,
+        0, 0, sz, 0,
+        0, 0, 0, 1  };
     return scale_mat;
 }
 
 // Definition of a rotation matrix about the x-axis theta degrees
 vector<GLfloat> rotation_matrix_x (float theta) {
-    vector<GLfloat> rotate_mat_x;
-    
-    // TODO: Define rotation matrix about the x-axis matrix
-    
+    vector<GLfloat> rotate_mat_x {
+        // TODO: Define rotation matrix about the x-axis matrix
+        1, 0, 0, 0,
+        0, cos(theta), -sin(theta), 0,
+        0, sin(theta), cos(theta),  0,
+        0, 0, 0, 1   };
     return rotate_mat_x;
 }
 
 
 // Definition of a rotation matrix about the y-axis by theta degrees
 vector<GLfloat> rotation_matrix_y (float theta) {
-    vector<GLfloat> rotate_mat_y;
-    
-    // TODO: Define rotation matrix about the y-axis matrix
-    
+    vector<GLfloat> rotate_mat_y{
+        // TODO: Define rotation matrix about the y-axis matrix
+        cos(theta), 0, -sin(theta), 0,
+        0, 1, 0, 0,
+        sin(theta),  0, cos(theta), 0,
+        0, 0, 0, 1   };
     return rotate_mat_y;
 }
 
 
 // Definition of a rotation matrix about the z-axis by theta degrees
 vector<GLfloat> rotation_matrix_z (float theta) {
-    vector<GLfloat> rotate_mat_z;
-    
-    // TODO: Define rotation matrix about the z-axis matrix
-    
+    vector<GLfloat> rotate_mat_z{
+        // TODO: Define rotation matrix about the z-axis matrix
+        cos(theta), -sin(theta), 0, 0,
+        sin(theta), cos(theta), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1   };
     return rotate_mat_z;
 }
 
@@ -170,9 +180,48 @@ vector<GLfloat> mat_mult(vector<GLfloat> A, vector<GLfloat> B) {
 
 // Builds a unit cube centered at the origin
 vector<GLfloat> build_cube() {
-    vector<GLfloat> result;
-    
     // TODO: Creates a unit cube by transforming a set of planes
+    vector<GLfloat> result;
+    vector<GLfloat> plane = init_plane();
+    
+    vector<GLfloat> homog_plane = to_homogeneous_coord(plane);
+    
+    vector<GLfloat> front_plane = mat_mult(homog_plane, translation_matrix(0, 0, 0.5));
+    vector<GLfloat> back_plane = mat_mult(homog_plane, translation_matrix(0, 0, -0.5));
+    
+    vector<GLfloat> left_plane  = mat_mult(homog_plane, rotation_matrix_y(deg2rad(-90)));
+    left_plane  = mat_mult(homog_plane, translation_matrix(-0.5, 0, 0));
+    
+    vector<GLfloat> right_plane = mat_mult(homog_plane, rotation_matrix_y(deg2rad(90)));
+    right_plane = mat_mult(homog_plane, translation_matrix(0.5, 0, 0));
+    
+    vector<GLfloat> top_plane = mat_mult(homog_plane, rotation_matrix_x(deg2rad(90)));
+    top_plane = mat_mult(homog_plane, translation_matrix(0, 0, 0.5));
+    
+    vector<GLfloat> bottom_plane = mat_mult(homog_plane, rotation_matrix_y(deg2rad(-90)));
+    bottom_plane = mat_mult(homog_plane, translation_matrix(0, -1, 0));
+    
+    /*
+    result.insert(result.end(), front_plane.begin(), front_plane.end());
+    result.insert(result.end(), back_plane.begin(), back_plane.end());
+    result.insert(result.end(), left_plane.begin(), left_plane.end());
+    result.insert(result.end(), right_plane.begin(), right_plane.end());
+    result.insert(result.end(), top_plane.begin(), top_plane.end());
+    result.insert(result.end(), bottom_plane.begin(), bottom_plane.end());
+    */
+    vector<GLfloat> front_cartesian_plane = to_cartesian_coord(front_plane);
+    vector<GLfloat> back_cartesian_plane = to_cartesian_coord(back_plane);
+    vector<GLfloat> top_cartesian_plane = to_cartesian_coord(top_plane);
+    vector<GLfloat> bottom_cartesian_plane = to_cartesian_coord(bottom_plane);
+    vector<GLfloat> left_cartesian_plane = to_cartesian_coord(left_plane);
+    vector<GLfloat> right_cartesian_plane = to_cartesian_coord(right_plane);
+    
+    result.insert(result.end(), front_cartesian_plane.begin(), front_cartesian_plane.end());
+    result.insert(result.end(), back_cartesian_plane.begin(), back_cartesian_plane.end());
+    result.insert(result.end(), top_cartesian_plane.begin(), top_cartesian_plane.end());
+    result.insert(result.end(), bottom_cartesian_plane.begin(), bottom_cartesian_plane.end());
+    result.insert(result.end(), left_cartesian_plane.begin(), left_cartesian_plane.end());
+    result.insert(result.end(), right_cartesian_plane.begin(), right_cartesian_plane.end());
     
     return result;
 }
@@ -204,16 +253,25 @@ void setup() {
 
 void init_camera() {
     // Camera parameters
+    /*
     glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
+    glLoadIdentity(); */
     
     // TODO: Setup your camera here
+    // Camera parameters
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    // Define a 50 degree field of view, 1:1 aspect ratio, near and far planes at 3 and 7
+    gluPerspective(50.0, 1.0, 2.0, 10.0);
+    // Position camera at (2, 3, 5), attention at (0, 0, 0), up at (0, 1, 0)
+    gluLookAt(2.0, 6.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     
 }
 
 // Construct the scene using objects built from cubes/prisms
 vector<GLfloat> init_scene() {
     vector<GLfloat> scene;
+    scene = build_cube();
     
     // TODO: Build your scene here
     
@@ -233,7 +291,10 @@ void display_func() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // TODO: Rotate the scene using the scene vector
-    
+    vector<GLfloat> unit_cube = build_cube();
+    vector<GLfloat> cube_transformation_00 = mat_mult(unit_cube, rotation_matrix_x(THETA));
+    vector<GLfloat> cube_transformation_01 = mat_mult(unit_cube, rotation_matrix_y(THETA));
+    vector<GLfloat> cube_transformation_02 = mat_mult(unit_cube, rotation_matrix_z(THETA));
     
     GLfloat* scene_vertices = vector2array(SCENE);
     GLfloat* color_vertices = vector2array(COLOR);

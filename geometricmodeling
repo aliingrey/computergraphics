@@ -36,7 +36,7 @@ using namespace std;
 // If a float is < EPSILON or > -EPILSON then it should be 0
 float EPSILON = 0.000001;
 // theta is the angle to rotate the scene
-float THETA = 0.1;
+float THETA = 0.3;
 // Vector placeholders for the scene and color array
 vector<GLfloat> SCENE;
 
@@ -292,22 +292,22 @@ vector<GLfloat> init_scene() {
     vector<GLfloat> lamp_leg_04;
     
     
-    couch_bottom_right = mat_mult(scaling_matrix(2, 0.5, 2), build_cube());
+    couch_bottom_right = mat_mult(scaling_matrix(1.2, 0.5, 1.45), build_cube());
     couch_bottom_right = mat_mult(rotation_matrix_y(70), couch_bottom_right);
-    couch_bottom_right = mat_mult(translation_matrix(2, -1.5, -2), couch_bottom_right);
+    couch_bottom_right = mat_mult(translation_matrix(2, 0, -0.45), couch_bottom_right);
     
-    couch_bottom_middle = mat_mult(scaling_matrix(3.5, 0.5, 2), build_cube());
+    couch_bottom_middle = mat_mult(scaling_matrix(1.5, 0.5, 1.5), build_cube());
     couch_bottom_middle = mat_mult(rotation_matrix_y(70), couch_bottom_middle);
-    couch_bottom_middle = mat_mult(translation_matrix(-0.1, -1.5, -2), couch_bottom_middle);
+    couch_bottom_middle = mat_mult(translation_matrix(.5, 0, 0), couch_bottom_middle);
     
     couch_bottom_long = mat_mult(scaling_matrix(2.5, 0.5, 2), build_cube());
     couch_bottom_long = mat_mult(rotation_matrix_y(70), couch_bottom_long);
-    couch_bottom_long = mat_mult(translation_matrix(-0.7, 0, 1.5), couch_bottom_long);
+    couch_bottom_long = mat_mult(translation_matrix(-0.9, 0, 1.2), couch_bottom_long);
     
-    couch_back_right = mat_mult(scaling_matrix(3.5, 0.3, 1.5), build_cube());
+    couch_back_right = mat_mult(scaling_matrix(3, 0.3, 1.5), build_cube());
     couch_back_right = mat_mult(rotation_matrix_x(90), couch_back_right);
     couch_back_right = mat_mult(rotation_matrix_y(-20), couch_back_right);
-    couch_back_right = mat_mult(translation_matrix(1, 0, -1.5), couch_back_right);
+    couch_back_right = mat_mult(translation_matrix(1, 0.5, -0.86), couch_back_right);
     
     couch_back_left = mat_mult(scaling_matrix(2, 0.3, 1.5), build_cube());
     couch_back_left = mat_mult(rotation_matrix_x(90), couch_back_left);
@@ -315,47 +315,48 @@ vector<GLfloat> init_scene() {
     couch_back_left = mat_mult(translation_matrix(-1.3, 0.5, 0), couch_back_left);
     
     
-    couch_arm_left = mat_mult(scaling_matrix(0.4, 1, 1.8), build_cube());
+    couch_arm_left = mat_mult(scaling_matrix(0.4, .75, 1.8), build_cube());
     couch_arm_left = mat_mult(rotation_matrix_y(-20), couch_arm_left);
-    couch_arm_left = mat_mult(translation_matrix(-2.5, -0.3, .7), couch_arm_left);
+    couch_arm_left = mat_mult(translation_matrix(-2.2, 0.5
+                                                 , 1), couch_arm_left);
     
-    couch_arm_right = mat_mult(scaling_matrix(0.4, 1, 1.8), build_cube());
+    couch_arm_right = mat_mult(scaling_matrix(0.3, .75, 1.8), build_cube());
     couch_arm_right = mat_mult(rotation_matrix_y(-20), couch_arm_right);
-    couch_arm_right = mat_mult(translation_matrix(3, 1.7, 1), couch_arm_right);
+    couch_arm_right = mat_mult(translation_matrix(2.8, 0.5 ,-0.75), couch_arm_right);
     //
     //main_section_bottom = mat_mult(rotation_matrix_x(70), main_section_bottom);
     
-    pillow_01 = mat_mult(rotation_matrix_x(-10), build_cube());
-    pillow_01 = mat_mult(scaling_matrix(.5, .5, .2), pillow_01);
-    pillow_01 = mat_mult(translation_matrix(2, 2.3, 1.3), pillow_01);
+    pillow_01 = mat_mult(scaling_matrix(.55, .65, .2), build_cube());
+    pillow_01 = mat_mult(rotation_matrix_x(-10), pillow_01);
+    pillow_01 = mat_mult(translation_matrix(2, 0.4, -0.8), pillow_01);
 
     pillow_02 = mat_mult(scaling_matrix(.55, .65, .2), build_cube());
     pillow_02 = mat_mult(rotation_matrix_x(-10), pillow_02);
-    pillow_02 = mat_mult(translation_matrix(2.3, 2.2, 1), pillow_02);
+    pillow_02 = mat_mult(translation_matrix(2.3, 0.4, -1), pillow_02);
     
     pillow_03 = mat_mult(scaling_matrix(.65, .65, .2), build_cube());
     pillow_03 = mat_mult(rotation_matrix_y(-40), pillow_03);
-    pillow_03 = mat_mult(translation_matrix(-1.2, 1, 1), pillow_03);
+    pillow_03 = mat_mult(translation_matrix(-1, 1, 0.5), pillow_03);
     
     pillow_04 = mat_mult(scaling_matrix(.75, .85, .2), build_cube());
     pillow_04 = mat_mult(rotation_matrix_y(-40), pillow_04);
-    pillow_04 = mat_mult(translation_matrix(-0.5, 1, 1), pillow_04);
+    pillow_04 = mat_mult(translation_matrix(-1.5, 1, 0.5), pillow_04);
     
-    table_top = mat_mult(scaling_matrix(1.3, 0.1, .7), build_cube());
+    table_top = mat_mult(scaling_matrix(1.8, 0.1, .9), build_cube());
     table_top = mat_mult(rotation_matrix_y(-20), table_top);
-    table_top = mat_mult(translation_matrix(2, 3, 3), table_top);
+    table_top = mat_mult(translation_matrix(2, 0.5, 1.25), table_top);
     
-    table_leg_backleft = mat_mult(scaling_matrix(.05, 1, .05), build_cube());
-    table_leg_backleft = mat_mult(translation_matrix(0.7, -1, 0.7), table_leg_backleft);
+    table_leg_backleft = mat_mult(scaling_matrix(.05, 0.65, .05), build_cube());
+    table_leg_backleft = mat_mult(translation_matrix(1.2, 0.2, 1.25), table_leg_backleft);
 
-    table_leg_backright = mat_mult(scaling_matrix(.05, 1, .05), build_cube());
-    table_leg_backright = mat_mult(translation_matrix(3, -1, -0.1), table_leg_backright);
+    table_leg_backright = mat_mult(scaling_matrix(.05, 0.65, .05), build_cube());
+    table_leg_backright = mat_mult(translation_matrix(2.8, 0.2, 1.25), table_leg_backright);
 
-    table_leg_frontleft = mat_mult(scaling_matrix(.05, 1, .05), build_cube());
-    table_leg_frontleft = mat_mult(translation_matrix(1.2, -1, 1.7), table_leg_frontleft);
+    table_leg_frontleft = mat_mult(scaling_matrix(.05, 0.65, .05), build_cube());
+    table_leg_frontleft = mat_mult(translation_matrix(2.6, 0.2, 0.75), table_leg_frontleft);
 
-    table_leg_frontright = mat_mult(scaling_matrix(.05, 1, .05), build_cube());
-    table_leg_frontright = mat_mult(translation_matrix(3.5, -1, 0.7), table_leg_frontright);
+    table_leg_frontright = mat_mult(scaling_matrix(.05, 0.65, .05), build_cube());
+    table_leg_frontright = mat_mult(translation_matrix(1.3, 0.2, 1.8), table_leg_frontright);
     
     lampshade = mat_mult(scaling_matrix(.5, .5, .5), build_cube());
     lampshade = mat_mult(translation_matrix(-2.7, 2, 0), lampshade);
@@ -368,15 +369,6 @@ vector<GLfloat> init_scene() {
     lamp_leg_02 = mat_mult(rotation_matrix_z(10), lamp_leg_02);
     lamp_leg_02 = mat_mult(translation_matrix(-2.5, 0, 0), lamp_leg_02);
 
-    lamp_leg_03 = mat_mult(scaling_matrix(.05, 4, .05), build_cube());
-    lamp_leg_03 = mat_mult(rotation_matrix_z(10), lamp_leg_03);
-    lamp_leg_03 = mat_mult(rotation_matrix_y(90), lamp_leg_03);
-    lamp_leg_03 = mat_mult(translation_matrix(-3, 0, 0), lamp_leg_03);
-
-    lamp_leg_04 = mat_mult(scaling_matrix(.05, 4, .05), build_cube());
-    lamp_leg_04 = mat_mult(rotation_matrix_z(10), lamp_leg_04);
-    lamp_leg_04 = mat_mult(rotation_matrix_y(-90), lamp_leg_04);
-    lamp_leg_04 = mat_mult(translation_matrix(-3, 0, -0.5), lamp_leg_04);
     
     
     scene.insert(scene.end(), couch_bottom_right.begin(), couch_bottom_right.end());
@@ -396,13 +388,11 @@ vector<GLfloat> init_scene() {
     scene.insert(scene.end(), table_leg_frontleft.begin(), table_leg_frontleft.end());
     scene.insert(scene.end(), table_leg_backright.begin(), table_leg_backright.end());
     scene.insert(scene.end(), table_leg_backleft.begin(), table_leg_backleft.end());
-    
-    
+
+
     scene.insert(scene.end(), lampshade.begin(), lampshade.end());
     scene.insert(scene.end(), lamp_leg_01.begin(), lamp_leg_01.end());
     scene.insert(scene.end(), lamp_leg_02.begin(), lamp_leg_02.end());
-    scene.insert(scene.end(), lamp_leg_03.begin(), lamp_leg_03.end());
-    scene.insert(scene.end(), lamp_leg_04.begin(), lamp_leg_04.end());
     
     
     //cout << scene.size();
@@ -430,6 +420,11 @@ void display_func() {
     vector<GLfloat> cube_transformation_01 = mat_mult(unit_cube, rotation_matrix_y(THETA));
     vector<GLfloat> cube_transformation_02 = mat_mult(unit_cube, rotation_matrix_z(THETA));
     
+    //vector<GLfloat> points = to_homogeneous_coord(init_scene());
+    SCENE = mat_mult(rotation_matrix_y(THETA), SCENE);
+    //SCENE = to_cartesian_coord(points);
+    
+    
     GLfloat* scene_vertices = vector2array(SCENE);
     GLfloat* color_vertices = vector2array(COLOR);
     // Pass the scene vertex pointer
@@ -455,7 +450,7 @@ void display_func() {
 }
 
 void idle_func() {
-    THETA = THETA + 0.3;
+    //THETA = THETA + 0.00001;
     display_func();
 }
 
@@ -471,18 +466,20 @@ int main (int argc, char **argv) {
     init_camera();
     // Setting global variables SCENE and COLOR with actual values
     SCENE = init_scene();
+    
+    
+    
     COLOR = init_color(SCENE);
     
-    //vector<GLfloat> homogeneous_points = to_homogenous_coord(SCENE);
     
-    SCENE = mat_mult(rotation_matrix_x(deg2rad(THETA)), SCENE);
+    
+    
+//    vector<GLfloat> homogeneous_points = SCENE;
+//
+//    vector<GLfloat> x_rotated_points = mat_mult(rotation_matrix_x(deg2rad(THETA)), homogeneous_points);
 //    vector<GLfloat> y_rotated_points = mat_mult(rotation_matrix_y(deg2rad(THETA)), x_rotated_points);
 //    vector<GLfloat> z_rotated_points = mat_mult(rotation_matrix_z(deg2rad(THETA)), y_rotated_points);
-    
-//    SCENE = rotation_matrix_x(deg2rad(THETA));
-//    SCENE = rotation_matrix_y(THETA);
-//    SCENE = rotation_matrix_z(THETA);
-    
+//    SCENE = z_rotated_points;
     
     // Set up our display function
     glutDisplayFunc(display_func);

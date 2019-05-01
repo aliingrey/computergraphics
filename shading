@@ -31,7 +31,15 @@
 #include <stdlib.h>
 #include <math.h>
 #include <vector>
+#include <stdio.h>
+
 using namespace std;
+
+vector<GLfloat> AMB = {0.45, 0.45, 0.45};
+vector<GLfloat> DIFF = {0.15, 0.15, 0.15};
+vector<GLfloat> SPEC = {0.05, 0.05, 0.05};
+vector<GLfloat> LIGHT = {-3.5, -3.5, 1.5};
+vector<GLfloat> CAMERA = {2.0, 3.0, 5.0};
 
 // If a float is < EPSILON or > -EPILSON then it should be 0
 float EPSILON = 0.000001;
@@ -250,22 +258,31 @@ vector<GLfloat> cross_product(vector<GLfloat> A, vector<GLfloat> B) {
 // Generates the normals to each surface (plane)
 vector<GLfloat> generate_normals(vector<GLfloat> points) {
     vector<GLfloat> normals;
-    vector<GLfloat> a;
-    vector<GLfloat> b;
-    vector<GLfloat> c;
     // TODO: generates the normals to each surface
-    a.push_back(points[0]-points[4]);
-    b.push_back(points[4]-points[8]);
-    a.push_back(points[1]-points[5]);
-    b.push_back(points[5]-points[9]);
-    a.push_back(points[2]-points[6]);
-    b.push_back(points[6]-points[10]);
-    c = cross_product(a,b);
+    for(int i =0; points.size(); i+=16){
+        vector<GLfloat> a;
+        vector<GLfloat> b;
+        vector<GLfloat> c;
+        
+        a.push_back(points[i]-points[i+12]);
+        a.push_back(points[i+1]-points[i+13]);
+        a.push_back(points[i+2]-points[i+14]);
+        
+        b.push_back(points[i+8]-points[i+12]);
+        b.push_back(points[i+9]-points[i+13]);
+        b.push_back(points[i+10]-points[i+14]);
+        c = cross_product(a,b);
+        
+        for(int i = 0; i < 4; i++) {
+            normals.insert(normals.end(), c.begin(),c.end());
+        }
+    }
+    
     // Note: each plane (quad) contains 4 points, choose the points
     // to generate your vectors such that the normals (given by the
     // cross product, point to the correct direction
     
-    return c;
+    return normals;
 }
 
 
@@ -334,16 +351,57 @@ ObjectModel apply_shading(ObjectModel object_model, vector<GLfloat> light_source
 //    h
     vector<GLfloat> points = object_model.get_points();
     vector<GLfloat> normals = object_model.get_normals();
-    vector<GLfloat> color = object_model.get_colors();
+    //vector<GLfloat> color = object_model.get_colors();
     vector<GLfloat> basecolor = object_model.get_base_colors();
     
-    GLfloat normal;
-    GLfloat h;
-    GLfloat light_vector;
+    vector<GLfloat> xyz;
+    vector<GLfloat> rgb;
+    vector<GLfloat> normal;
+    
+    for(int i=0; i < points.size(); i+=3){
+        xyz.push_back(points[i]);
+        xyz.push_back(points[i+1]);
+        xyz.push_back(points[i+2]);
+        
+        rgb.push_back(basecolor[i]);
+        rgb.push_back(basecolor[i+1]);
+        rgb.push_back(basecolor[i+2]);
+        
+        normal.push_back(normals[i]);
+        normal.push_back(normals[i+1]);
+        normal.push_back(normals[i+2]);
+        
+        //vector<GLfloat> light_vector = subtract_vectors(light_source, xyz);
+
+    }
+    
+    vector<GLfloat> light_vector;
+    for(int i = 0; i < points.size()/3; i+=3) {
+        light_vector.push_back(points[i]-light_source[0]);
+        light_vector.push_back(points[i+1]-light_source[1]);
+        light_vector.push_back(points[i+2]-light_source[2]);
+    }
+    
+    vector<GLfloat> h;
+    for(int i = 0; i < points.size()/3; i+=3) {
+        h.push_back(light_source[i]-light_vector[0]);
+        h.push_back(light_source[i+1]-light_vector[1]);
+        h.push_back(light_source[i+2]-light_vector[2]);
+    }
+    
     GLfloat n_dot_l = dot_product(normal, light_source);
     GLfloat n_dot_h = dot_product(normal, h);
     
-    GLfloat red = basecolor*(amb+diff*(dot_product(normal, light_source))+spec(dot_product(normal, h)));
+    GLfloat red = basecolor[0] * (amb[0] + diff[0] * n_dot_l) + spec[0] * n_dot_h;
+    colors.push_back(red);
+    
+    GLfloat green = basecolor[1] * (amb[1] + diff[1] * n_dot_l) + spec[1] * n_dot_h;
+    colors.push_back(green);
+    
+    GLfloat blue = basecolor[2] *(amb[2] + diff[2] * n_dot_l) + spec[2] * n_dot_h;
+    colors.push_back(blue);
+    
+    
     object_model.set_colors(colors);
     return object_model;
 }
@@ -532,7 +590,10 @@ vector<GLfloat> init_scene() {
 vector<GLfloat> init_color() {
     vector<GLfloat> colors;
     
-    // TODO: Construct the base colors of the scene
+    vector<GLfloat> red = { 255, 0, 0};
+    vector<GLfloat> green = { 0, 255, 0};
+    vector<GLfloat> blue = { 0, 0, 255};
+
     
     return colors;
 }
@@ -543,10 +604,10 @@ void display_func() {
     
     // TODO: Initialize your scene at every iteration
     SCENE.set_points(init_scene());
-    SCENE.set_points(to_cartesian_coord(SCENE.get_points()));
+    SCENE.set_points((to_cartesian_coord(SCENE.get_points())));
     
     // TODO: Apply shading to the scene
-    
+    SCENE.set_colors(init_color());
     
     // TODO: Rotate the scene using the rotation matrix
     

@@ -1,9 +1,9 @@
 /***
  Assignment-4: Shading via Illumination and Colors
  
- Name: Wong, Alex (Please write your name in Last Name, First Name format)
+ Name: Ingrey, Ali
  
- Collaborators: Doe, John; Doe, Jane
+ Collaborators: Filler, Ali; Zafaris, Serena
  ** Note: although the assignment should be completed individually
  you may speak with classmates on high level algorithmic concepts. Please
  list their names in this section
@@ -338,74 +338,48 @@ ObjectModel apply_shading(ObjectModel object_model, vector<GLfloat> light_source
                           vector<GLfloat> amb, vector<GLfloat> diff, vector<GLfloat> spec, GLfloat m) {
     vector<GLfloat> colors;
     
-    
-    // THIS IS WHAT AN OBJECTMODEL LOOKS LIKE
-//    vector<GLfloat> get_points() { return _points; };
-//    vector<GLfloat> get_normals() { return _normals; };
-//    vector<GLfloat> get_base_colors() { return _base_colors; };
-//    vector<GLfloat> get_colors() { return _colors; };
-    
-    // TODO: apply shading to objects using illumination formula for multiple light sources
-//    basecolor
-//    normal
-//    h
+    vector<GLfloat> base_colors = object_model.get_base_colors();
     vector<GLfloat> points = object_model.get_points();
     vector<GLfloat> normals = object_model.get_normals();
-    //vector<GLfloat> color = object_model.get_colors();
-    vector<GLfloat> basecolor = object_model.get_base_colors();
     
-    vector<GLfloat> xyz;
-    vector<GLfloat> rgb;
-    vector<GLfloat> normal;
-    
-    for(int i=0; i < points.size(); i+=3){
-        xyz.push_back(points[i]);
-        xyz.push_back(points[i+1]);
-        xyz.push_back(points[i+2]);
+    for(int i = 0; i < points.size(); i += 3){
+        vector<GLfloat> point = {points[i], points[i+1], points[i+2]};
+        vector<GLfloat> base_color = {base_colors[i], base_colors[i+1], base_colors[i+2]};
+        vector<GLfloat> normal = {normals[i], normals[i+1], normals[i+2]};
         
-        rgb.push_back(basecolor[i]);
-        rgb.push_back(basecolor[i+1]);
-        rgb.push_back(basecolor[i+2]);
+        vector<GLfloat> v_vector = {
+                             light_source[0]-point[0],
+                             light_source[1]-point[1],
+                              light_source[2]-point[2] };
         
-        normal.push_back(normals[i]);
-        normal.push_back(normals[i+1]);
-        normal.push_back(normals[i+2]);
+        vector<GLfloat> h_vector = { light_source[0]-v_vector[0],
+                             light_source[1]-v_vector[1],
+                             light_source[2]-v_vector[2] };
         
-        //vector<GLfloat> light_vector = subtract_vectors(light_source, xyz);
-
+        GLfloat h_magnitude = sqrt(
+                                   pow(light_source[0]-point[0],2)
+                                   + pow(light_source[1]-point[1],2)
+                                   + pow(light_source[2]-point[2],2) );
+        vector<GLfloat> h = {
+            (h_vector[0] / h_magnitude),
+            (h_vector[1] / h_magnitude),
+            (h_vector[2] / h_magnitude)    };
+        
+        GLfloat n_dot_l = dot_product(normal, light_source);
+        GLfloat n_dot_h = dot_product(normal, h);
+        
+        GLfloat i_red = base_color[0] * (amb[0] + (diff[0] * (n_dot_l))) + (spec[0] * base_color[0] * (n_dot_h));
+        colors.push_back(i_red);
+        
+        GLfloat i_green = base_color[1] * (amb[1] + (diff[1] * (n_dot_l))) + (spec[1] * base_color[1] * (n_dot_h));
+        colors.push_back(i_green);
+        
+        GLfloat i_blue = base_color[2] * (amb[2] + (diff[2] * (n_dot_l))) + (spec[2] * base_color[2] * (n_dot_h));
+        colors.push_back(i_blue);
     }
-    
-    vector<GLfloat> light_vector;
-    for(int i = 0; i < points.size()/3; i+=3) {
-        light_vector.push_back(points[i]-light_source[0]);
-        light_vector.push_back(points[i+1]-light_source[1]);
-        light_vector.push_back(points[i+2]-light_source[2]);
-    }
-    
-    vector<GLfloat> h;
-    for(int i = 0; i < points.size()/3; i+=3) {
-        h.push_back(light_source[i]-light_vector[0]);
-        h.push_back(light_source[i+1]-light_vector[1]);
-        h.push_back(light_source[i+2]-light_vector[2]);
-    }
-    
-    GLfloat n_dot_l = dot_product(normal, light_source);
-    GLfloat n_dot_h = dot_product(normal, h);
-    
-    GLfloat red = basecolor[0] * (amb[0] + diff[0] * n_dot_l) + spec[0] * n_dot_h;
-    colors.push_back(red);
-    
-    GLfloat green = basecolor[1] * (amb[1] + diff[1] * n_dot_l) + spec[1] * n_dot_h;
-    colors.push_back(green);
-    
-    GLfloat blue = basecolor[2] *(amb[2] + diff[2] * n_dot_l) + spec[2] * n_dot_h;
-    colors.push_back(blue);
-    
-    
     object_model.set_colors(colors);
     return object_model;
 }
-
 
 /**************************************************
  *            Camera and World Modeling           *
@@ -593,7 +567,7 @@ vector<GLfloat> init_color() {
     vector<GLfloat> red = { 255, 0, 0};
     vector<GLfloat> green = { 0, 255, 0};
     vector<GLfloat> blue = { 0, 0, 255};
-
+    
     
     return colors;
 }

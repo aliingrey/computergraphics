@@ -257,8 +257,10 @@ vector<GLfloat> cross_product(vector<GLfloat> A, vector<GLfloat> B) {
 
 // Generates the normals to each surface (plane)
 vector<GLfloat> generate_normals(vector<GLfloat> points) {
+    
     vector<GLfloat> normals;
     // TODO: generates the normals to each surface
+    
     for(int i =0; points.size(); i+=16){
         vector<GLfloat> a;
         vector<GLfloat> b;
@@ -284,6 +286,7 @@ vector<GLfloat> generate_normals(vector<GLfloat> points) {
     
     return normals;
 }
+
 
 
 /**************************************************
@@ -423,7 +426,7 @@ void init_camera() {
 ObjectModel make_rug(){
     ObjectModel rug_object;
     
-    rug_object.set_points(mat_mult(scaling_matrix(2.0, 0.01, 1.5), build_cube()));
+    rug_object.set_points(build_cube());
     
     vector<GLfloat> colors;
     int planes_per_cube = 6;
@@ -437,9 +440,10 @@ ObjectModel make_rug(){
     }
     
     rug_object.set_base_colors(colors);
-    
+
     return rug_object;
 }
+
 
 // Construct the scene using objects built from cubes/prisms
 vector<GLfloat> init_scene() {

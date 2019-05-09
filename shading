@@ -263,13 +263,13 @@ vector<GLfloat> generate_normals(vector<GLfloat> points) {
         vector<GLfloat> b;
         vector<GLfloat> c;
         
-        a.push_back(points[i] - points[i+12]);
-        a.push_back(points[i+1] - points[i+13]);
-        a.push_back(points[i+2] - points[i+14]);
+        a.push_back(-points[i] + points[i+12]);
+        a.push_back(-points[i+1] + points[i+13]);
+        a.push_back(-points[i+2] + points[i+14]);
         
-        b.push_back(points[i+8] - points[i+12]);
-        b.push_back(points[i+9] - points[i+13]);
-        b.push_back(points[i+10] - points[i+14]);
+        b.push_back(-points[i+8] + points[i+12]);
+        b.push_back(-points[i+9] + points[i+13]);
+        b.push_back(-points[i+10] + points[i+14]);
         c = cross_product(a,b);
         
         for(int i = 0; i < 4; i++) {
@@ -362,12 +362,14 @@ ObjectModel apply_shading(ObjectModel object_model, vector<GLfloat> light_source
                           vector<GLfloat> amb, vector<GLfloat> diff, vector<GLfloat> spec, GLfloat m) {
     vector<GLfloat> colors;
     
-    // vectors containing the base colors, points, and normals of the input object model
-    vector<GLfloat> object_base_colors = object_model.get_base_colors();
     // convert points to cartesian because they are currently homogeneous
     vector<GLfloat> object_points = to_cartesian_coord(object_model.get_points());
     vector<GLfloat> object_normals = object_model.get_normals();
     
+    // vectors containing the base colors, points, and normals of the input object model
+    vector<GLfloat> object_base_colors = object_model.get_base_colors();
+    
+
     GLfloat red_amb = amb[0];
     GLfloat green_amb = amb[1];
     GLfloat blue_amb = amb[2];
@@ -400,6 +402,7 @@ ObjectModel apply_shading(ObjectModel object_model, vector<GLfloat> light_source
         GLfloat red_base = base_color[0];
         GLfloat green_base = base_color[1];
         GLfloat blue_base = base_color[2];
+        
         
         vector<GLfloat> h_vector = {
             camera[i*3] + light_vector[0], //x coord
@@ -467,9 +470,6 @@ void init_camera() {
     
 }
 
-
-
-
 ObjectModel build_couch() {
     ObjectModel couch;
     vector<GLfloat> couch_points;
@@ -513,19 +513,21 @@ ObjectModel build_couch() {
     couch_points.insert(couch_points.end(), couch_back_left.begin(), couch_back_left.end());
     couch_points.insert(couch_points.end(), couch_arm_left.begin(), couch_arm_left.end());
     couch_points.insert(couch_points.end(), couch_arm_right.begin(), couch_arm_right.end());
+    
     couch.set_points(couch_points);
     
     vector<GLfloat> couch_normals = generate_normals(couch_points);
     couch.set_normals(couch_normals);
     
-    vector<GLfloat> colors = init_base_color(0.76,0.94,0.92);
+    vector<GLfloat> colors = init_base_color(0.9,0.9,0.9);
     vector<GLfloat> couch_colors;
     for(int i = 0; i < 42; i++) {
         couch_colors.insert(couch_colors.end(), colors.begin(), colors.end());
     }
-    couch.set_base_colors(couch_colors);
-    //couch = apply_shading(couch, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
     
+    couch.set_base_colors(couch_colors);
+    couch = apply_shading(couch, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
+    couch.set_colors(couch.get_colors());
     return couch;
 
 }
@@ -568,8 +570,8 @@ ObjectModel build_table() {
         table_colors.insert(table_colors.end(), colors.begin(), colors.end());
     }
     table.set_base_colors(table_colors);
-    //table = apply_shading(table, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
-    
+    table = apply_shading(table, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
+    table.set_colors(table.get_colors());
     return table;
 }
 
@@ -599,16 +601,17 @@ ObjectModel build_lamp() {
     
     vector<GLfloat> colors = init_base_color(0.9,0.7,0.5);
     vector<GLfloat> lamp_colors;
+    
     for(int i = 0; i < 18; i++) {
         lamp_colors.insert(lamp_colors.end(), colors.begin(), colors.end());
     }
+    
     lamp.set_base_colors(lamp_colors);
     //couch = apply_shading(couch, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
     
-    /*
     lamp = apply_shading(lamp, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
     lamp.set_colors(lamp.get_colors());
-     */
+    
     return lamp;
 }
 
@@ -651,8 +654,9 @@ ObjectModel build_pillows() {
         pillows_colors.insert(pillows_colors.end(), colors.begin(), colors.end());
     }
     pillows.set_base_colors(pillows_colors);
-    //table = apply_shading(table, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
-    
+    pillows = apply_shading(pillows, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
+    pillows.set_colors(pillows.get_colors());
+
     return pillows;
 }
 
@@ -664,7 +668,6 @@ vector<GLfloat> init_scene() {
     vector<GLfloat> couch_points = couch.get_points();
     scene.insert(scene.end(), couch_points.begin(), couch_points.end());
    
-    
     ObjectModel table = build_table();
     vector<GLfloat> table_vertices = table.get_points();
     scene.insert(scene.end(), table_vertices.begin(), table_vertices.end());
@@ -677,13 +680,7 @@ vector<GLfloat> init_scene() {
     vector<GLfloat> pillows_vertices = pillows.get_points();
     scene.insert(scene.end(), pillows_vertices.begin(), pillows_vertices.end());
     
-    //cout << scene.size();
-    
-    // TODO: Build your scene here
     return scene;
-    
-    
-    
 }
 
 // Construct the color mapping of the scene
@@ -691,31 +688,21 @@ vector<GLfloat> init_color() {
     vector<GLfloat> scene;
     
     ObjectModel couch = build_couch();
-    vector<GLfloat> couch_colors = couch.get_base_colors();
+    vector<GLfloat> couch_colors = couch.get_colors();
     scene.insert(scene.end(), couch_colors.begin(), couch_colors.end());
     
     ObjectModel table = build_table();
-    vector<GLfloat> table_colors = table.get_base_colors();
+    vector<GLfloat> table_colors = table.get_colors();
     scene.insert(scene.end(), table_colors.begin(), table_colors.end());
     
     ObjectModel lamp = build_lamp();
-    vector<GLfloat> lamp_colors = lamp.get_base_colors();
+    vector<GLfloat> lamp_colors = lamp.get_colors();
     scene.insert(scene.end(), lamp_colors.begin(), lamp_colors.end());
     
     ObjectModel pillows = build_pillows();
-    vector<GLfloat> pillows_colors = pillows.get_base_colors();
+    vector<GLfloat> pillows_colors = pillows.get_colors();
     scene.insert(scene.end(), pillows_colors.begin(), pillows_colors.end());
     
-    /*
-    vector<GLfloat> table_color = (build_table().get_colors());
-    scene.insert(scene.end(), table_color.begin(), table_color.end());
-    
-    vector<GLfloat> lamp_color = (build_lamp().get_colors());
-    scene.insert(scene.end(), lamp_color.begin(), lamp_color.end());
-    
-    vector<GLfloat> pillows_color = (build_pillows().get_colors());
-    scene.insert(scene.end(), pillows_color.begin(), pillows_color.end());
-    */
     return scene;
     
 }

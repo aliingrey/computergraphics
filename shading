@@ -593,18 +593,18 @@ ObjectModel build_lamp() {
     lamp_points.insert(lamp_points.end(), lamp_leg_02.begin(), lamp_leg_02.end());
     
     lamp.set_points(lamp_points);
-    // calculate lamp normals
+    
     vector<GLfloat> lamp_normals = generate_normals(lamp_points);
     lamp.set_normals(lamp_normals);
     
-    // colors
-    vector<GLfloat> colors = init_base_color(0.13,0.13,0.13);
+    vector<GLfloat> colors = init_base_color(0.9,0.7,0.5);
     vector<GLfloat> lamp_colors;
-    
-    for(int i = 0; i < 12; i++) {
+    for(int i = 0; i < 18; i++) {
         lamp_colors.insert(lamp_colors.end(), colors.begin(), colors.end());
     }
     lamp.set_base_colors(lamp_colors);
+    //couch = apply_shading(couch, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
+    
     /*
     lamp = apply_shading(lamp, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
     lamp.set_colors(lamp.get_colors());
@@ -641,21 +641,17 @@ ObjectModel build_pillows() {
     pillow_points.insert(pillow_points.end(), pillow_04.begin(), pillow_04.end());
     
     pillows.set_points(pillow_points);
+
+    vector<GLfloat> pillows_normals = generate_normals(pillow_points);
+    pillows.set_normals(pillows_normals);
     
-    // calculate pillow normals
-    vector<GLfloat> pillow_normals = generate_normals(pillow_points);
-    pillows.set_normals(pillow_normals);
-    
-    // colors
-    vector<GLfloat> colors = init_base_color(1.00,0.85,0.98);
-    vector<GLfloat> pillow_colors;
-    
+    vector<GLfloat> colors = init_base_color(0.9,0.9,1);
+    vector<GLfloat> pillows_colors;
     for(int i = 0; i < 24; i++) {
-        pillow_colors.insert(pillow_colors.end(), colors.begin(), colors.end());
+        pillows_colors.insert(pillows_colors.end(), colors.begin(), colors.end());
     }
-    
-    pillows.set_base_colors(pillow_colors);
-    //pillows = apply_shading(pillows, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
+    pillows.set_base_colors(pillows_colors);
+    //table = apply_shading(table, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
     
     return pillows;
 }
@@ -672,7 +668,7 @@ vector<GLfloat> init_scene() {
     ObjectModel table = build_table();
     vector<GLfloat> table_vertices = table.get_points();
     scene.insert(scene.end(), table_vertices.begin(), table_vertices.end());
-    /*
+    
     ObjectModel lamp = build_lamp();
     vector<GLfloat> lamp_points = lamp.get_points();
     scene.insert(scene.end(), lamp_points.begin(), lamp_points.end());
@@ -680,7 +676,7 @@ vector<GLfloat> init_scene() {
     ObjectModel pillows = build_pillows();
     vector<GLfloat> pillows_vertices = pillows.get_points();
     scene.insert(scene.end(), pillows_vertices.begin(), pillows_vertices.end());
-    */
+    
     //cout << scene.size();
     
     // TODO: Build your scene here
@@ -701,6 +697,14 @@ vector<GLfloat> init_color() {
     ObjectModel table = build_table();
     vector<GLfloat> table_colors = table.get_base_colors();
     scene.insert(scene.end(), table_colors.begin(), table_colors.end());
+    
+    ObjectModel lamp = build_lamp();
+    vector<GLfloat> lamp_colors = lamp.get_base_colors();
+    scene.insert(scene.end(), lamp_colors.begin(), lamp_colors.end());
+    
+    ObjectModel pillows = build_pillows();
+    vector<GLfloat> pillows_colors = pillows.get_base_colors();
+    scene.insert(scene.end(), pillows_colors.begin(), pillows_colors.end());
     
     /*
     vector<GLfloat> table_color = (build_table().get_colors());

@@ -4,12 +4,8 @@
  Name: Ingrey, Ali
  
  Collaborators: Filler, Ali; Zafaris, Serena
- ** Note: although the assignment should be completed individually
- you may speak with classmates on high level algorithmic concepts. Please
- list their names in this section
  
- Project Summary: A short paragraph (3-4 sentences) describing the work you
- did for the project.
+ Project Summary: In this assigment, I took my living room set up from the last project, and applied colors and shading to it. I set an RGB value from 0 to 1 and set it as a base color for each object, and applied those base colors to my apply_shading function which used Gourad Shading to render objects based off of a light source.
  ***/
 
 
@@ -232,7 +228,6 @@ vector<GLfloat> build_cube() {
     return result;
 }
 
-
 /**************************************************
  *           Generating Surface Normals           *
  *                                                *
@@ -243,10 +238,8 @@ vector<GLfloat> build_cube() {
  *  surface follows the Right Hand Rule.          *
  *                                                *
  *************************************************/
-
 // Performs the cross product between two vectors
 vector<GLfloat> cross_product(vector<GLfloat> A, vector<GLfloat> B) {
-    // TODO: performs the cross product between two vectors
     vector<GLfloat> C;
     C.push_back(A[1]*B[2] - B[1]*A[2]);
     C.push_back(A[0]*B[2] - B[0]*A[2]);
@@ -276,17 +269,7 @@ vector<GLfloat> generate_normals(vector<GLfloat> points) {
             normals.insert(normals.end(), c.begin(),c.end());
         }
     }
-    
-    // Note: each plane (quad) contains 4 points, choose the points
-    // to generate your vectors such that the normals (given by the
-    // cross product, point to the correct direction
-    
     return normals;
-    
-    
-    // Note: each plane (quad) contains 4 points, choose the points
-    // to generate your vectors such that the normals (given by the
-    // cross product, point to the correct direction
     
 }
 /**************************************************
@@ -299,9 +282,6 @@ vector<GLfloat> generate_normals(vector<GLfloat> points) {
  *  applying the shading equation.                *
  *                                                *
  *************************************************/
-
-
-
 // Initializes the base color of a plane to a single color
 vector<GLfloat> init_base_color(GLfloat r, GLfloat g, GLfloat b) {
     vector<GLfloat> base_color = {
@@ -329,11 +309,10 @@ vector<GLfloat> init_base_color(GLfloat r0, GLfloat g0, GLfloat b0, GLfloat r1, 
 // Performs the dot product between two vectors
 GLfloat dot_product(vector<GLfloat> a, vector<GLfloat> b) {
     GLfloat answer = a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
-    // TODO: perform the dot product between two vectors
-    
     return answer;
 }
 
+//gets magnitude of a given vector
 GLfloat magnitude(vector<GLfloat> vec) {
     GLfloat sum = 0;
     for(int i = 0; i < 3; i++) {
@@ -342,6 +321,7 @@ GLfloat magnitude(vector<GLfloat> vec) {
     return sqrt(sum);
 }
 
+//normalizes vector using a vector and its magnitude
 vector <GLfloat> normalize(vector<GLfloat> vec, GLfloat mag) {
     for(int i = 0; i < 3; i++) {
         vec[i] = vec[i] / mag;
@@ -349,7 +329,7 @@ vector <GLfloat> normalize(vector<GLfloat> vec, GLfloat mag) {
     return vec;
 }
 
-
+//subtracts two vectors
 vector<GLfloat> vector_subtraction(vector<GLfloat> vector1, vector<GLfloat> vector2){
     vector<GLfloat> result;
     result.push_back(vector1[0] - vector2[0]);
@@ -357,19 +337,19 @@ vector<GLfloat> vector_subtraction(vector<GLfloat> vector1, vector<GLfloat> vect
     result.push_back(vector1[2] - vector2[2]);
     return result;
 }
-
+// Allows for ambience (a vector of 3 values), diffusion (vector of 3 values) and specular (vector of 3 values)
+// as input to the shading equation
 ObjectModel apply_shading(ObjectModel object_model, vector<GLfloat> light_source, vector<GLfloat> camera,
                           vector<GLfloat> amb, vector<GLfloat> diff, vector<GLfloat> spec, GLfloat m) {
     vector<GLfloat> colors;
     
-    // convert points to cartesian because they are currently homogeneous
-    vector<GLfloat> object_points = to_cartesian_coord(object_model.get_points());
-    vector<GLfloat> object_normals = object_model.get_normals();
-    
-    // vectors containing the base colors, points, and normals of the input object model
+    // puts base colors in a vector
     vector<GLfloat> object_base_colors = object_model.get_base_colors();
     
-    
+    // convert points to cartesian because they are homogeneous
+    vector<GLfloat> object_points = to_cartesian_coord(object_model.get_points());
+    vector<GLfloat> object_normals = object_model.get_normals();
+
     GLfloat red_amb = amb[0];
     GLfloat green_amb = amb[1];
     GLfloat blue_amb = amb[2];
@@ -382,41 +362,30 @@ ObjectModel apply_shading(ObjectModel object_model, vector<GLfloat> light_source
     GLfloat green_spec = spec[1];
     GLfloat blue_spec = spec[2];
     
-    //camera
-    camera = normalize(camera, magnitude(camera));
-    
     // loop through for each point (vector of length 3)
-    for(int i = 0; i < object_points.size()/3; i ++){
+    for(int i = 0; i < object_points.size(); i += 3){
+        
         vector<GLfloat> light_vector = {
             object_points[i*3] - light_source[0], //x coord
             object_points[i*3 + 1] - light_source[1], //y coord
             object_points[i*3 + 2] - light_source[2] //z coord
         };
         
-        //normlaize
+        //normlaize light vector
         light_vector = normalize(light_vector, magnitude(light_vector));
         
         vector<GLfloat> base_color = {object_base_colors[i], object_base_colors[i+1], object_base_colors[i+2]};
-        vector<GLfloat> normal = {object_normals[i*3], object_normals[i*3+1], object_normals[i*3+2]};
+        vector<GLfloat> normal = {object_normals[i], object_normals[i+1], object_normals[i+2]};
         
         GLfloat red_base = base_color[0];
         GLfloat green_base = base_color[1];
         GLfloat blue_base = base_color[2];
         
+        //uses (v-l)/mag(v-l) to get v vector
+        vector<GLfloat> v_vector = vector_subtraction(light_source, object_points);
+        vector<GLfloat> h_vector = normalize(vector_subtraction(light_source,v_vector), magnitude(vector_subtraction(light_source,v_vector)));
         
-        vector<GLfloat> h_vector = {
-            camera[i*3] + light_vector[0], //x coord
-            camera[i*3 + 1] + light_vector[1], //y coord
-            camera[i*3 + 2] + light_vector[2] //z coord
-        };
-        
-        h_vector = {
-            camera[0] + light_vector[0], //x coord
-            camera[1] + light_vector[1], //y coord
-            camera[2] + light_vector[2] //z coord
-        };
-        
-        GLfloat n_dot_l = dot_product(normal, light_vector);
+        GLfloat n_dot_l = dot_product(normal, light_source);
         GLfloat n_dot_h = dot_product(normal, h_vector);
         
         GLfloat I_r = red_base * (red_amb + (red_diff * (n_dot_l)) + red_spec * (n_dot_h));
@@ -432,10 +401,6 @@ ObjectModel apply_shading(ObjectModel object_model, vector<GLfloat> light_source
     object_model.set_colors(colors);
     return object_model;
 }
-
-
-
-
 /**************************************************
  *            Camera and World Modeling           *
  *                                                *
@@ -445,6 +410,7 @@ ObjectModel apply_shading(ObjectModel object_model, vector<GLfloat> light_source
  *  the projection/viewing matrices               *
  *                                                *
  *************************************************/
+
 
 void setup() {
     // Enable the vertex array functionality
@@ -470,7 +436,7 @@ void init_camera() {
     gluPerspective(50.0, 1.0, 2.0, 10.0);
     // Position camera at (2, 3, 5), attention at (0, 0, 0), up at (0, 1, 0)
     gluLookAt(2.0, 6.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-
+    
     
 }
 
@@ -500,12 +466,10 @@ ObjectModel build_couch() {
     couch_back_left = mat_mult(rotation_matrix_y(-20), couch_back_left);
     couch_back_left = mat_mult(translation_matrix(-1.3, 0.5, 0), couch_back_left);
     
-    
     vector<GLfloat> couch_arm_left = mat_mult(scaling_matrix(0.4, .75, 1.8), build_cube());
     couch_arm_left = mat_mult(rotation_matrix_y(-20), couch_arm_left);
     couch_arm_left = mat_mult(translation_matrix(-2.2, 0.5
                                                  , 1), couch_arm_left);
-    
     vector<GLfloat> couch_arm_right = mat_mult(scaling_matrix(0.3, .75, 1.8), build_cube());
     couch_arm_right = mat_mult(rotation_matrix_y(-20), couch_arm_right);
     couch_arm_right = mat_mult(translation_matrix(2.8, 0.5 ,-0.75), couch_arm_right);
@@ -525,15 +489,17 @@ ObjectModel build_couch() {
     
     vector<GLfloat> colors = init_base_color(0.6,0.6,0.6);
     vector<GLfloat> couch_colors;
+    
+    //6 points x 7 objects = 42
     for(int i = 0; i < 42; i++) {
         couch_colors.insert(couch_colors.end(), colors.begin(), colors.end());
     }
-    
+    //set base colors, apply shading, set to colors
     couch.set_base_colors(couch_colors);
     couch = apply_shading(couch, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
     couch.set_colors(couch.get_colors());
     return couch;
-
+    
 }
 
 ObjectModel build_table() {
@@ -568,7 +534,7 @@ ObjectModel build_table() {
     vector<GLfloat> table_normals = generate_normals(table_points);
     table.set_normals(table_normals);
     
-    vector<GLfloat> colors = init_base_color(0.8,0.6,0.5);
+    vector<GLfloat> colors = init_base_color(0.7,0.5,0.5);
     vector<GLfloat> table_colors;
     for(int i = 0; i < 30; i++) {
         table_colors.insert(table_colors.end(), colors.begin(), colors.end());
@@ -622,7 +588,7 @@ ObjectModel build_pillows() {
     ObjectModel pillows;
     
     vector<GLfloat> pillow_points;
-
+    
     vector<GLfloat> pillow_01 = mat_mult(scaling_matrix(.55, .65, .2), build_cube());
     pillow_01 = mat_mult(rotation_matrix_x(-10), pillow_01);
     pillow_01 = mat_mult(translation_matrix(2, 0.4, -0.8), pillow_01);
@@ -645,11 +611,11 @@ ObjectModel build_pillows() {
     pillow_points.insert(pillow_points.end(), pillow_04.begin(), pillow_04.end());
     
     pillows.set_points(pillow_points);
-
+    
     vector<GLfloat> pillows_normals = generate_normals(pillow_points);
     pillows.set_normals(pillows_normals);
     
-    vector<GLfloat> colors = init_base_color(0.9,0.9,1);
+    vector<GLfloat> colors = init_base_color(0.7,0.9,1);
     vector<GLfloat> pillows_colors;
     for(int i = 0; i < 24; i++) {
         pillows_colors.insert(pillows_colors.end(), colors.begin(), colors.end());
@@ -657,7 +623,7 @@ ObjectModel build_pillows() {
     pillows.set_base_colors(pillows_colors);
     pillows = apply_shading(pillows, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
     pillows.set_colors(pillows.get_colors());
-
+    
     return pillows;
 }
 
@@ -668,7 +634,7 @@ vector<GLfloat> init_scene() {
     ObjectModel couch = build_couch();
     vector<GLfloat> couch_points = couch.get_points();
     scene.insert(scene.end(), couch_points.begin(), couch_points.end());
-   
+    
     ObjectModel table = build_table();
     vector<GLfloat> table_vertices = table.get_points();
     scene.insert(scene.end(), table_vertices.begin(), table_vertices.end());

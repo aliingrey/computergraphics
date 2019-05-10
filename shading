@@ -369,7 +369,7 @@ ObjectModel apply_shading(ObjectModel object_model, vector<GLfloat> light_source
     // vectors containing the base colors, points, and normals of the input object model
     vector<GLfloat> object_base_colors = object_model.get_base_colors();
     
-
+    
     GLfloat red_amb = amb[0];
     GLfloat green_amb = amb[1];
     GLfloat blue_amb = amb[2];
@@ -410,8 +410,12 @@ ObjectModel apply_shading(ObjectModel object_model, vector<GLfloat> light_source
             camera[i*3 + 2] + light_vector[2] //z coord
         };
         
-        h_vector = normalize(h_vector, magnitude(h_vector));
- 
+        h_vector = {
+            camera[0] + light_vector[0], //x coord
+            camera[1] + light_vector[1], //y coord
+            camera[2] + light_vector[2] //z coord
+        };
+        
         GLfloat n_dot_l = dot_product(normal, light_vector);
         GLfloat n_dot_h = dot_product(normal, h_vector);
         
@@ -428,6 +432,7 @@ ObjectModel apply_shading(ObjectModel object_model, vector<GLfloat> light_source
     object_model.set_colors(colors);
     return object_model;
 }
+
 
 
 
@@ -465,8 +470,7 @@ void init_camera() {
     gluPerspective(50.0, 1.0, 2.0, 10.0);
     // Position camera at (2, 3, 5), attention at (0, 0, 0), up at (0, 1, 0)
     gluLookAt(2.0, 6.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-    
-    // TODO: Setup your camera here
+
     
 }
 
@@ -519,7 +523,7 @@ ObjectModel build_couch() {
     vector<GLfloat> couch_normals = generate_normals(couch_points);
     couch.set_normals(couch_normals);
     
-    vector<GLfloat> colors = init_base_color(0.9,0.9,0.9);
+    vector<GLfloat> colors = init_base_color(0.6,0.6,0.6);
     vector<GLfloat> couch_colors;
     for(int i = 0; i < 42; i++) {
         couch_colors.insert(couch_colors.end(), colors.begin(), colors.end());
@@ -607,7 +611,6 @@ ObjectModel build_lamp() {
     }
     
     lamp.set_base_colors(lamp_colors);
-    //couch = apply_shading(couch, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
     
     lamp = apply_shading(lamp, LIGHT, CAMERA, AMB, DIFF, SPEC, 1);
     lamp.set_colors(lamp.get_colors());
@@ -619,8 +622,7 @@ ObjectModel build_pillows() {
     ObjectModel pillows;
     
     vector<GLfloat> pillow_points;
-    
-    // build pillow geometry
+
     vector<GLfloat> pillow_01 = mat_mult(scaling_matrix(.55, .65, .2), build_cube());
     pillow_01 = mat_mult(rotation_matrix_x(-10), pillow_01);
     pillow_01 = mat_mult(translation_matrix(2, 0.4, -0.8), pillow_01);
@@ -636,7 +638,6 @@ ObjectModel build_pillows() {
     vector<GLfloat> pillow_04 = mat_mult(scaling_matrix(.75, .85, .2), build_cube());
     pillow_04 = mat_mult(rotation_matrix_y(-40), pillow_04);
     pillow_04 = mat_mult(translation_matrix(-1.5, 1, 0.5), pillow_04);
-    
     
     pillow_points.insert(pillow_points.end(), pillow_01.begin(), pillow_01.end());
     pillow_points.insert(pillow_points.end(), pillow_02.begin(), pillow_02.end());
@@ -711,20 +712,15 @@ vector<GLfloat> init_color() {
 void display_func() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    // TODO: Initialize your scene at every iteration
+    // init scene, set colors
     SCENE.set_points(init_scene());
     SCENE.set_colors(init_color());
     
-    SCENE.set_points((to_cartesian_coord(SCENE.get_points())));
-    
-    // TODO: Apply shading to the scene
-    
-    
-    // TODO: Rotate the scene using the rotation matrix
-    
-    
+    // rotate scene
+    SCENE.set_points(to_cartesian_coord(mat_mult(rotation_matrix_y(THETA), (SCENE.get_points()))));
     GLfloat* scene_vertices = vector2array(SCENE.get_points());
     GLfloat* color_vertices = vector2array(SCENE.get_colors());
+    
     // Pass the scene vertex pointer
     glVertexPointer(3,                // 3 components (x, y, z)
                     GL_FLOAT,         // Vertex type is GL_FLOAT
